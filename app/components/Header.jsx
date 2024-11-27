@@ -2,41 +2,38 @@ import {Suspense} from 'react';
 import {Await, NavLink} from '@remix-run/react';
 import {useAnalytics} from '@shopify/hydrogen';
 import {useAside} from '~/components/Aside';
+import LogoAsset from '~/assets/logoYellow.png'
+import { ChevronDown, Home, Menu, Search, ShoppingCart, User } from 'lucide-react';
 
-/**
- * @param {HeaderProps}
- */
-export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
+export function Header({
+  header,
+  isLoggedIn,
+  cart,
+  publicStoreDomain,
+}) {
   const {shop, menu} = header;
   return (
     <header className="header">
       <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
+            <img src={LogoAsset} alt="Logo" srcSet="" className='w-10' />
+          </NavLink>
       <HeaderMenu
         menu={menu}
         viewport="desktop"
         primaryDomainUrl={header.shop.primaryDomain.url}
         publicStoreDomain={publicStoreDomain}
       />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} shop={shop} />
     </header>
   );
 }
 
-/**
- * @param {{
- *   menu: HeaderProps['header']['menu'];
- *   primaryDomainUrl: HeaderProps['header']['shop']['primaryDomain']['url'];
- *   viewport: Viewport;
- *   publicStoreDomain: HeaderProps['publicStoreDomain'];
- * }}
- */
 export function HeaderMenu({
   menu,
   primaryDomainUrl,
   viewport,
   publicStoreDomain,
+  headerLogo
 }) {
   const className = `header-menu-${viewport}`;
 
@@ -49,6 +46,7 @@ export function HeaderMenu({
 
   return (
     <nav className={className} role="navigation">
+      {headerLogo}
       {viewport === 'mobile' && (
         <NavLink
           end
@@ -57,11 +55,10 @@ export function HeaderMenu({
           style={activeLinkStyle}
           to="/"
         >
-          Home
+          <Home/>
         </NavLink>
       )}
-      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-        if (!item.url) return null;
+      {(menu || FALLBACK_HEADER_MENU).items.filter(el =>el?.url).map((item, k) => {
 
         // if the url is internal, we strip the domain
         const url =
@@ -71,8 +68,9 @@ export function HeaderMenu({
             ? new URL(item.url).pathname
             : item.url;
         return (
-          <NavLink
-            className="header-menu-item"
+          <>
+            <NavLink
+            className="header-menu-item relative group"
             end
             key={item.id}
             onClick={closeAside}
@@ -81,29 +79,60 @@ export function HeaderMenu({
             to={url}
           >
             {item.title}
+            {item?.items?.length>0 && 
+              <>
+                <ChevronDown/>
+                <div className='hidden group-hover:flex flex-col items-start justify-between absolute top-full bg-[var(--theme-accent-color)] text-[var(--theme-base-color)] p-5 gap-1'>
+                  {item?.items?.map((el) => {
+                    let url2 =
+                    el?.url.includes('myshopify.com') ||
+                    el?.url.includes(publicStoreDomain) ||
+                    el?.url.includes(primaryDomainUrl)
+                      ? new URL(el?.url).pathname
+                      : el?.url;
+                    return(
+                      <NavLink key={el?.id} to={url2} className=' text-nowrap '>
+                      {el?.title}
+                    </NavLink>
+                    )
+                    
+                  })}
+                </div>
+              </>
+            }
           </NavLink>
+          </>
         );
       })}
     </nav>
   );
 }
 
-/**
- * @param {Pick<HeaderProps, 'isLoggedIn' | 'cart'>}
- */
-function HeaderCtas({isLoggedIn, cart}) {
+function HeaderCtas({
+  isLoggedIn,
+  cart,
+  shop
+}) {
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-        {/***********************************************/
-        /**********  EXAMPLE UPDATE STARTS  ************/}
-        {isLoggedIn ? 'Account' : 'Sign in'}
-        {/**********   EXAMPLE UPDATE END   ************/
-        /***********************************************/}
-      </NavLink>
-      <SearchToggle />
-      <CartToggle cart={cart} />
+      {/* <NavLink className="md:hidden block" prefetch="intent" to="/" style={activeLinkStyle} end>
+        <img src={LogoAsset} className=' w-40 ' alt={shop.name} srcSet="" />
+      </NavLink> */}
+      <div className='flex flex-row items-center justify-center gap-x-4 '>
+        <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
+          <Suspense fallback="Sign in">
+            <Await resolve={isLoggedIn} errorElement="Sign in">
+              {(isLoggedIn) => (isLoggedIn ? 
+                <User/> : 
+                'Sign In'
+                )}
+            </Await>
+          </Suspense>
+        </NavLink>
+        <SearchToggle />
+        <CartToggle cart={cart} />
+      </div>
     </nav>
   );
 }
@@ -115,7 +144,7 @@ function HeaderMenuMobileToggle() {
       className="header-menu-mobile-toggle reset"
       onClick={() => open('mobile')}
     >
-      <h3>☰</h3>
+      <h3><Menu/></h3>
     </button>
   );
 }
@@ -123,22 +152,35 @@ function HeaderMenuMobileToggle() {
 function SearchToggle() {
   const {open} = useAside();
   return (
-    <button className="reset" onClick={() => open('search')}>
-      Search
+    <button onClick={() => open('search')}>
+      <Search/>
     </button>
   );
 }
 
-/**
- * @param {{count: number}}
- */
 function CartBadge({count}) {
   const {open} = useAside();
   const {publish, shop, cart, prevCart} = useAnalytics();
 
+  // return (
+  //   <a
+  //     href="/cart"
+  //     onClick={(e) => {
+  //       e.preventDefault();
+  //       open('cart');
+  //       publish('cart_viewed', {
+  //         cart,
+  //         prevCart,
+  //         shop,
+  //         url: window.location.href || '',
+  //       } as CartViewPayload);
+  //     }}
+  //   >
+  //     Cart {count}
+  //   </a>
+  // );
   return (
-    <a
-      href="/cart"
+    <div
       onClick={(e) => {
         e.preventDefault();
         open('cart');
@@ -149,15 +191,16 @@ function CartBadge({count}) {
           url: window.location.href || '',
         });
       }}
+      className='grid place-content-center relative'
     >
-      Cart {count}
-    </a>
+      <ShoppingCart/> 
+      {count === null ? <span>&nbsp;</span> : 
+      <div className=' absolute w-5 h-5 rounded-full grid place-content-center -right-2 -top-2 bg-[var(--theme-accent-color)] font-bold text-[var(--theme-base-color)]'>{count}</div>}
+    </div>
   );
+
 }
 
-/**
- * @param {Pick<HeaderProps, 'cart'>}
- */
 function CartToggle({cart}) {
   return (
     <Suspense fallback={<CartBadge count={0} />}>
@@ -213,28 +256,12 @@ const FALLBACK_HEADER_MENU = {
   ],
 };
 
-/**
- * @param {{
- *   isActive: boolean;
- *   isPending: boolean;
- * }}
- */
-function activeLinkStyle({isActive, isPending}) {
+function activeLinkStyle({
+  isActive,
+  isPending,
+}) {
   return {
     fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
+    // color: isPending ? 'grey' : 'black',
   };
 }
-
-/** @typedef {'desktop' | 'mobile'} Viewport */
-/**
- * @typedef {Object} HeaderProps
- * @property {HeaderQuery} header
- * @property {Promise<CartApiQueryFragment|null>} cart
- * @property {boolean} isLoggedIn
- * @property {string} publicStoreDomain *******   EXAMPLE UPDATE END
- */
-
-/** @typedef {import('@shopify/hydrogen').CartViewPayload} CartViewPayload */
-/** @typedef {import('storefrontapi.generated').HeaderQuery} HeaderQuery */
-/** @typedef {import('storefrontapi.generated').CartApiQueryFragment} CartApiQueryFragment */

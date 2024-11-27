@@ -1,10 +1,16 @@
 import {Suspense} from 'react';
 import {Await, NavLink} from '@remix-run/react';
+import LogoAsset from '~/assets/logoYellow.png'
+import Instagram from '~/assets/instagram_1.svg'
+import Facebook from '~/assets/facebook_1.svg'
+import Twitter from '~/assets/twitter.svg'
 
-/**
- * @param {FooterProps}
- */
-export function Footer({footer: footerPromise, header, publicStoreDomain}) {
+
+export function Footer({
+  footer: footerPromise,
+  header,
+  publicStoreDomain,
+}) {
   return (
     <Suspense>
       <Await resolve={footerPromise}>
@@ -24,17 +30,23 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
   );
 }
 
-/**
- * @param {{
- *   menu: FooterQuery['menu'];
- *   primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
- *   publicStoreDomain: string;
- * }}
- */
-function FooterMenu({menu, primaryDomainUrl, publicStoreDomain}) {
+function FooterMenu({
+  menu,
+  primaryDomainUrl,
+  publicStoreDomain,
+}) {
   return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
+    <nav className="footer-menu bg-[#3B1E54] h-[30vh] flex w-full flex-row flex-wrap items-start justify-between pt-16 px-28" role="navigation">
+
+      <div>
+
+        <img src={LogoAsset} alt="Logo" srcSet="" className='w-10' />
+
+      </div>
+
+      <div className='grid md:grid-cols-2 md:gap-4'>
+
+      {(FALLBACK_FOOTER_MENU).items.map((item) => {
         if (!item.url) return null;
         // if the url is internal, we strip the domain
         const url =
@@ -60,6 +72,20 @@ function FooterMenu({menu, primaryDomainUrl, publicStoreDomain}) {
           </NavLink>
         );
       })}
+      </div>
+      <div className='flex flex-col items-end justify-items-start text-white'>
+
+        <div className='flex flex-row items-center justify-between footer-icon'>
+
+          <div><img src={Facebook} alt="facebook" srcSet="" /></div>
+
+          <div><img src={Instagram} alt="instagram" srcSet="" /></div>
+
+          <div><img src={Twitter} alt="twitter" srcSet="" /></div>
+
+        </div>
+
+      </div>
     </nav>
   );
 }
@@ -106,25 +132,12 @@ const FALLBACK_FOOTER_MENU = {
   ],
 };
 
-/**
- * @param {{
- *   isActive: boolean;
- *   isPending: boolean;
- * }}
- */
-function activeLinkStyle({isActive, isPending}) {
+function activeLinkStyle({
+  isActive,
+  isPending,
+}) {
   return {
     fontWeight: isActive ? 'bold' : undefined,
     color: isPending ? 'grey' : 'white',
   };
 }
-
-/**
- * @typedef {Object} FooterProps
- * @property {Promise<FooterQuery|null>} footer
- * @property {HeaderQuery} header
- * @property {string} publicStoreDomain
- */
-
-/** @typedef {import('storefrontapi.generated').FooterQuery} FooterQuery */
-/** @typedef {import('storefrontapi.generated').HeaderQuery} HeaderQuery */
