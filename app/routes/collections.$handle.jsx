@@ -78,7 +78,7 @@ export default function Collection() {
   const {collection} = useLoaderData();
 
   return (
-    <div className="collection">
+    <div className="collection px-[10%]">
       <h1>{collection.title}</h1>
       <p className="collection-description">{collection.description}</p>
       <PaginatedResourceSection
