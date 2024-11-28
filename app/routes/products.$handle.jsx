@@ -1,10 +1,12 @@
 import {Suspense} from 'react';
 import {defer, redirect} from '@shopify/remix-oxygen';
-import {Await, useLoaderData} from '@remix-run/react';
+import {Await, Link, useLoaderData} from '@remix-run/react';
 import {
   getSelectedProductOptions,
   Analytics,
   useOptimisticVariant,
+  Money,
+  Image,
 } from '@shopify/hydrogen';
 import {getVariantUrl} from '~/lib/variants';
 import {ProductPrice} from '~/components/ProductPrice';
@@ -28,7 +30,9 @@ export async function loader(args) {
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  return defer({...deferredData, ...criticalData});
+  const recommendedProducts =  loadRecommendedProd(args);
+
+  return defer({...deferredData, ...criticalData, ...recommendedProducts});
 }
 
 /**
@@ -105,6 +109,28 @@ function loadDeferredData({context, params}) {
 }
 
 /**
+ * Load data for rendering content below the fold. This data is deferred and will be
+ * fetched after the initial page load. If it's unavailable, the page should still 200.
+ * Make sure to not throw any errors here, as it will cause the page to 500.
+ * @param {LoaderFunctionArgs}
+ */
+function loadRecommendedProd({context}) {
+  console.log('RECOMloaddeferProd',context)
+
+  const recommendedProducts = context.storefront
+    .query(RECOMMENDED_PRODUCTS_QUERY)
+    .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      console.error('loadRecommendedProd',error);
+      return null;
+    });
+
+  return {
+    recommendedProducts,
+  };
+}
+
+/**
  * @param {{
  *   product: ProductFragment;
  *   request: Request;
@@ -127,14 +153,56 @@ function redirectToFirstVariant({product, request}) {
   );
 }
 
+/**
+ * @param {{
+*   products: Promise<RecommendedProductsQuery | null>;
+* }}
+*/
+function RecommendedProducts({products}) {
+  console.log('RECOMPRDO',products)
+ return (
+   <div className="recommended-products">
+     <h2>Recommended Products</h2>
+     <Suspense fallback={<div>Loading...</div>}>
+       <Await resolve={products}>
+         {(response) => (
+           <div className="recommended-products-grid">
+             {response
+               ? response.products.nodes.map((product) => (
+                   <Link
+                     key={product.id}
+                     className="recommended-product"
+                     to={`/products/${product.handle}`}
+                   >
+                     <Image
+                       data={product.images.nodes[0]}
+                       aspectRatio="1/1"
+                       sizes="(min-width: 45em) 20vw, 50vw"
+                     />
+                     <h4>{product.title}</h4>
+                     <small>
+                       <Money data={product.priceRange.minVariantPrice} />
+                     </small>
+                   </Link>
+                 ))
+               : null}
+           </div>
+         )}
+       </Await>
+     </Suspense>
+     <br />
+   </div>
+ );
+}
+
 export default function Product() {
   /** @type {LoaderReturnData} */
-  const {product, variants} = useLoaderData();
+  const {product, variants, recommendedProducts} = useLoaderData();
   const selectedVariant = useOptimisticVariant(
     product.selectedVariant,
     variants,
   );
-
+console.log('RECOM',recommendedProducts)
   const {title, descriptionHtml} = product;
 
   return (
@@ -193,6 +261,10 @@ export default function Product() {
           ],
         }}
       />
+      {
+        recommendedProducts &&
+        <RecommendedProducts products={recommendedProducts} />
+      }
     </div>
   );
 }
@@ -301,9 +373,40 @@ const VARIANTS_QUERY = `#graphql
     }
   }
 `;
+const RECOMMENDED_PRODUCTS_QUERY = `#graphql
+  fragment RecommendedProduct on Product {
+    id
+    title
+    handle
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 1) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        ...RecommendedProduct
+      }
+    }
+  }
+`;
 
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
 /** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
 /** @typedef {import('storefrontapi.generated').ProductFragment} ProductFragment */
 /** @typedef {import('@shopify/hydrogen/storefront-api-types').SelectedOption} SelectedOption */
 /** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
+/** @typedef {import('storefrontapi.generated').RecommendedProductsQuery} RecommendedProductsQuery */

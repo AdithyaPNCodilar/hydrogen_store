@@ -46,6 +46,7 @@ async function loadCriticalData({context}) {
  * @param {LoaderFunctionArgs}
  */
 function loadDeferredData({context}) {
+  console.log('RECOMloaddefer',context)
   const recommendedProducts = context.storefront
     .query(RECOMMENDED_PRODUCTS_QUERY)
     .catch((error) => {
@@ -99,9 +100,10 @@ function FeaturedCollection({collection}) {
  * }}
  */
 function RecommendedProducts({products}) {
+  console.log('RECOMPROD',products)
   return (
     <div className="recommended-products">
-      <h2>Recommended Products</h2>
+      <h2>Best Selling Products</h2>
       <Suspense fallback={<div>Loading...</div>}>
         <Await resolve={products}>
           {(response) => (
