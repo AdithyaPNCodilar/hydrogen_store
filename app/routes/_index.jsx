@@ -2,6 +2,7 @@ import {defer} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link} from '@remix-run/react';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
+import secImage from '../assets/sec.jpg';
 
 /**
  * @type {MetaFunction}
@@ -65,8 +66,36 @@ export default function Homepage() {
   const data = useLoaderData();
   return (
     <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
+      {/* <FeaturedCollection collection={data.featuredCollection} /> */}
+        <div className='bg-[var(--theme-base-color)] h-96 w-full grid place-content-center'>
+          <div className='flex flex-col items-center justify-center w-[80vw] h-full text-center'>
+            <div className='flex flex-col items-center justify-center'>
+              <div className='text-5xl font-extrabold text-white'>Timeless Elegance, Handcrafted for You</div>
+              <div className='md:max-w-96 text-xl mt-3 text-white'>
+                "Step into a world of unparalleled quality and craftsmanship."
+              </div>
+            </div>
+          </div>
+      </div>
       <RecommendedProducts products={data.recommendedProducts} />
+      <div className='w-full flex flex-row items-center justify-between flex-wrap md:px-40 p-20 md:py-40 bg-[var(--theme-lightPurple-color)] text-white'>
+        {/* Left Side - Image */}
+        <div className='md:w-1/2'>
+          <img 
+            src={secImage} 
+            alt="Bags-luxury" 
+            className='w-full h-auto object-cover'
+          />
+        </div>
+        
+        {/* Right Side - Text */}
+        <div className='md:w-1/2 ml-auto text-right'>
+          <div className='text-5xl font-extrabold'>Elevate Your Everyday – Authentic Leather Bags Await</div>
+          <div className='text-lg mt-3 font-semibold'>
+          "Experience the perfect blend of luxury and functionality with our handcrafted leather bags. Designed to complement your style while standing the test of time, our collection boasts impeccable craftsmanship, premium materials, and timeless designs. Whether you're heading to the office or out on an adventure, our leather bags are made to accompany you every step of the way. Discover the elegance you deserve."
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
