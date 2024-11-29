@@ -3,6 +3,9 @@ import {Await, useLoaderData, Link} from '@remix-run/react';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import secImage from '../assets/sec.jpg';
+import premiumImg from '../assets/premium.jpg';
+import sustainableImg from '../assets/sustainable.jpg';
+import customerImg from '../assets/customer.jpg';
 
 /**
  * @type {MetaFunction}
@@ -76,7 +79,7 @@ export default function Homepage() {
               </div>
             </div>
           </div>
-      </div>
+        </div>
       <RecommendedProducts products={data.recommendedProducts} />
       <div className='w-full flex flex-row items-center justify-between flex-wrap md:px-40 p-20 md:py-40 bg-[var(--theme-lightPurple-color)] text-white'>
         {/* Left Side - Image */}
@@ -93,6 +96,97 @@ export default function Homepage() {
           <div className='text-5xl font-extrabold'>Elevate Your Everyday – Authentic Leather Bags Await</div>
           <div className='text-lg mt-3 font-semibold'>
           "Experience the perfect blend of luxury and functionality with our handcrafted leather bags. Designed to complement your style while standing the test of time, our collection boasts impeccable craftsmanship, premium materials, and timeless designs. Whether you're heading to the office or out on an adventure, our leather bags are made to accompany you every step of the way. Discover the elegance you deserve."
+          </div>
+        </div>
+      </div>
+
+    {/* Why Choose Us Section */}
+<div className="bg-[var(--theme-lightGray-color)] py-20 px-10 text-center">
+  <h2 className="text-4xl font-extrabold text-[var(--theme-primary-color)] mb-10">
+    Why Choose Us
+  </h2>
+  <div className="grid gap-10 md:grid-cols-3">
+    {/* Feature 1 */}
+    <div className="p-6 bg-[var(--theme-lightPurple-color)] rounded-lg shadow-lg">
+      <img
+        src={premiumImg}
+        alt="Premium Quality"
+        className="w-full h-auto rounded-lg mb-4"
+      />
+      <div className="text-[var(--theme-primary-color)] text-4xl mb-4">
+        <i className="fas fa-gem"></i>
+      </div>
+      <h3 className="text-xl font-bold mb-2">Premium Quality</h3>
+      <p className="text-gray-600">
+        Our products are crafted using the finest materials to ensure durability and elegance.
+      </p>
+    </div>
+    {/* Feature 2 */}
+    <div className="p-6 bg-[var(--theme-lightPurple-color)] rounded-lg shadow-lg">
+      <img
+        src={sustainableImg}
+        alt="Sustainable Practices"
+        className="w-full h-auto rounded-lg mb-4"
+      />
+      <div className="text-[var(--theme-primary-color)] text-4xl mb-4">
+        <i className="fas fa-hand-holding-heart"></i>
+      </div>
+      <h3 className="text-xl font-bold mb-2">Sustainable Practices</h3>
+      <p className="text-gray-600">
+        We prioritize eco-friendly manufacturing processes to reduce our environmental footprint.
+      </p>
+    </div>
+    {/* Feature 3 */}
+    <div className="p-6 bg-[var(--theme-lightPurple-color)] rounded-lg shadow-lg">
+      <img
+        src={customerImg}
+        alt="Customer Satisfaction"
+        className="w-full h-auto rounded-lg mb-4"
+      />
+      <div className="text-[var(--theme-primary-color)] text-4xl mb-4">
+        <i className="fas fa-thumbs-up"></i>
+      </div>
+      <h3 className="text-xl font-bold mb-2">Customer Satisfaction</h3>
+      <p className="text-gray-600">
+        Your satisfaction is our priority, with a dedicated team to assist you every step of the way.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+      {/* Customer Testimonials Section */}
+      <div className="bg-[var(--theme-lightGray-color)] py-20 px-10 text-center">
+        <h2 className="text-4xl font-extrabold text-[var(--theme-primary-color)] mb-10">
+          What Our Customers Say
+        </h2>
+        <div className="grid gap-10 md:grid-cols-3">
+          {/* Testimonial 1 */}
+          <div className="p-6 bg-[var(--theme-lightPurple-color)] rounded-lg shadow-lg">
+            <p className="text-lg font-medium text-gray-600 italic">
+              "Absolutely love the quality of these leather bags! They are stylish and durable."
+            </p>
+            <h4 className="text-xl font-semibold text-gray-800 mt-4">
+              - Sarah M.
+            </h4>
+          </div>
+          {/* Testimonial 2 */}
+          <div className="p-6 bg-[var(--theme-lightPurple-color)] rounded-lg shadow-lg">
+            <p className="text-lg font-medium text-gray-600 italic">
+              "The craftsmanship is outstanding. These bags truly stand the test of time."
+            </p>
+            <h4 className="text-xl font-semibold text-gray-800 mt-4">
+              - John D.
+            </h4>
+          </div>
+          {/* Testimonial 3 */}
+          <div className="p-6 bg-[var(--theme-lightPurple-color)] rounded-lg shadow-lg">
+            <p className="text-lg font-medium text-gray-600 italic">
+              "I'm so impressed by the elegance and practicality of these bags. Highly recommend!"
+            </p>
+            <h4 className="text-xl font-semibold text-gray-800 mt-4">
+              - Emily R.
+            </h4>
           </div>
         </div>
       </div>
