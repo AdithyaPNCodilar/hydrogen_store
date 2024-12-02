@@ -69,55 +69,82 @@ export default function Login() {
   const error = data?.error || null;
 
   return (
-    <div className="login">
-      <h1>Sign in.</h1>
-      <Form method="POST">
-        <fieldset>
-          <label htmlFor="email">Email address</label>
+    <div className="login bg-[var(--theme-lightGray-color)] min-h-screen flex items-center justify-center">
+  <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
+    <h1 className="text-3xl font-extrabold text-center text-[var(--theme-primary-color)] mb-6">
+      Sign in
+    </h1>
+    <Form method="POST" className="space-y-6">
+      <fieldset className="space-y-4">
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email address
+          </label>
           <input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
             required
-            placeholder="Email address"
-            aria-label="Email address"
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus
+            placeholder="Enter your email"
+            className="mt-1 block w-full px-4 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-[var(--theme-primary-color)] focus:border-[var(--theme-primary-color)]"
           />
-          <label htmlFor="password">Password</label>
+        </div>
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
           <input
             id="password"
             name="password"
             type="password"
             autoComplete="current-password"
-            placeholder="Password"
-            aria-label="Password"
+            placeholder="Enter your password"
             minLength={8}
             required
+            className="mt-1 block w-full px-4 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-[var(--theme-primary-color)] focus:border-[var(--theme-primary-color)]"
           />
-        </fieldset>
-        {error ? (
-          <p>
-            <mark>
-              <small>{error}</small>
-            </mark>
-          </p>
-        ) : (
-          <br />
-        )}
-        <button type="submit">Sign in</button>
-      </Form>
-      <br />
-      <div>
-        <p>
-          <Link to="/account/recover">Forgot password →</Link>
+        </div>
+      </fieldset>
+      {error && (
+        <p className="text-sm text-red-600 mt-2">
+          <mark className="bg-red-100">{error}</mark>
         </p>
-        <p>
-          <Link to="/account/register">Register →</Link>
-        </p>
-      </div>
+      )}
+      <button
+        type="submit"
+        className="w-full bg-[var(--theme-purple-color)] text-white py-2 px-4 rounded-md font-semibold hover:bg-[var(--theme-lightPurple-color)] focus:ring-2 focus:ring-[var(--theme-lightPurple-color)] focus:ring-opacity-50"
+      >
+        Sign in
+      </button>
+    </Form>
+    <div className="mt-6 text-sm text-center text-gray-600">
+      <p>
+        <Link
+          to="/account/recover"
+          className="text-[var(--theme-primary-color)] hover:underline"
+        >
+          Forgot password →
+        </Link>
+      </p>
+      <p className="mt-2">
+        <Link
+          to="/account/register"
+          className="text-[var(--theme-primary-color)] hover:underline"
+        >
+          Register →
+        </Link>
+      </p>
     </div>
+  </div>
+</div>
+
   );
 }
 
